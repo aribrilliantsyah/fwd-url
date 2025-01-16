@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"crypto/tls"
 	"flag"
 	"io"
 	"net/http"
@@ -43,7 +44,14 @@ func forwardHandler(baseUrl string) echo.HandlerFunc {
 			}
 		}
 
-		client := &http.Client{}
+		client := &http.Client{
+			Transport: &http.Transport{
+				TLSClientConfig: &tls.Config{
+					InsecureSkipVerify: true,
+				},
+			},
+		}
+
 		resp, err := client.Do(forwardReq)
 		if err != nil {
 			log.Printf("Error forwarding request: %v\n", err)
